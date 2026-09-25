@@ -15,19 +15,12 @@ void draw_state(
 {
     for (int index = 0; index < v.size(); index++)
     {
-        
         if (index < sorted)
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-
-        
         else if (index == red)
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-
-        
         else if (index == blue)
             SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-
-        
         else
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
@@ -43,49 +36,76 @@ void draw_state(
 
 int main(int argc, char* argv[])
 {
+    // Generate random values
     std::random_device rd;
-    std::uniform_int_distribution d(1, 99);
+    std::uniform_int_distribution<int> d(1, 99);
 
     std::vector<int> v;
 
-    
     for (int i = 0; i < 100; i++)
     {
         v.push_back(d(rd));
     }
 
-    
-    SDL_Init(SDL_INIT_VIDEO);
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+        std::cerr << "SDL_Init failed: "
+                  << SDL_GetError() << '\n';
+        return 1;
+    }
 
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
 
-    SDL_CreateWindowAndRenderer(
-        100 * 10,
-        100 * 10,
-        0,
-        &window,
-        &renderer
-    );
+    if (SDL_CreateWindowAndRenderer(
+            100 * 10,
+            100 * 10,
+            0,
+            &window,
+            &renderer) != 0)
+    {
+        std::cerr << "SDL_CreateWindowAndRenderer failed: "
+                  << SDL_GetError() << '\n';
+
+        SDL_Quit();
+        return 1;
+    }
 
     SDL_RenderSetScale(renderer, 10, 10);
 
-    
+    // Sorting animation
     for (unsigned int i = 0; i < v.size(); i++)
     {
         for (unsigned int j = i; j < v.size(); j++)
         {
-            
+            // Handle window events
+            SDL_Event event;
+
+            while (SDL_PollEvent(&event))
+            {
+                if (event.type == SDL_QUIT)
+                {
+                    SDL_DestroyRenderer(renderer);
+                    SDL_DestroyWindow(window);
+                    SDL_Quit();
+                    return 0;
+                }
+            }
+
+            // Clear screen
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
 
-            
+            // Draw current state
             draw_state(v, renderer, i, j, i);
 
+            // Show current frame
             SDL_RenderPresent(renderer);
+
             SDL_Delay(15);
 
-            
+            // Selection sort
             if (v[j] < v[i])
             {
                 std::swap(v[j], v[i]);
@@ -93,6 +113,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    // Draw final sorted array
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
@@ -101,11 +122,27 @@ int main(int argc, char* argv[])
     SDL_RenderPresent(renderer);
 
     std::cout << "Sorted: "
-        << std::ranges::is_sorted(v)
-        << '\n';
+              << std::ranges::is_sorted(v)
+              << '\n';
 
-    SDL_Delay(2000);
+    // Keep window open until user closes it
+    bool running = true;
+    SDL_Event event;
 
+    while (running)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                running = false;
+            }
+        }
+
+        SDL_Delay(16);
+    }
+
+    // Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
