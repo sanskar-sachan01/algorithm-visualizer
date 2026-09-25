@@ -34,6 +34,36 @@ void draw_state(
     }
 }
 
+bool bubble_sort(std::vector<int>& v, SDL_Renderer* renderer)
+{
+    for (unsigned int i = 0; i < v.size(); i++)
+    {
+        for (unsigned int j = 0; j + 1 < v.size() - i; j++)
+        {
+            SDL_Event event;
+
+            while (SDL_PollEvent(&event))
+            {
+                if (event.type == SDL_QUIT)
+                    return false;
+            }
+
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
+            draw_state(v, renderer, j, j + 1, 0);
+
+            SDL_RenderPresent(renderer);
+            SDL_Delay(15);
+
+            if (v[j] > v[j + 1])
+                std::swap(v[j], v[j + 1]);
+        }
+    }
+
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
     // Generate random values
@@ -74,43 +104,12 @@ int main(int argc, char* argv[])
 
     SDL_RenderSetScale(renderer, 10, 10);
 
-    // Sorting animation
-    for (unsigned int i = 0; i < v.size(); i++)
+    if (!bubble_sort(v, renderer))
     {
-        for (unsigned int j = i; j < v.size(); j++)
-        {
-            // Handle window events
-            SDL_Event event;
-
-            while (SDL_PollEvent(&event))
-            {
-                if (event.type == SDL_QUIT)
-                {
-                    SDL_DestroyRenderer(renderer);
-                    SDL_DestroyWindow(window);
-                    SDL_Quit();
-                    return 0;
-                }
-            }
-
-            // Clear screen
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
-
-            // Draw current state
-            draw_state(v, renderer, i, j, i);
-
-            // Show current frame
-            SDL_RenderPresent(renderer);
-
-            SDL_Delay(15);
-
-            // Selection sort
-            if (v[j] < v[i])
-            {
-                std::swap(v[j], v[i]);
-            }
-        }
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 0;
     }
 
     // Draw final sorted array
