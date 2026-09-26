@@ -7,7 +7,12 @@
             "command": "clang++",
             "args": [
                 "-std=c++20",
-                "${workspaceFolder}/Algorithm_visualizaer/Algorithm_visualizaer.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/main.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/bubble_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/selection_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/insertion_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/merge_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/quick_sort.cpp",
                 "-I/opt/homebrew/opt/sdl2-compat/include/SDL2",
                 "-L/opt/homebrew/opt/sdl2-compat/lib",
                 "-lSDL2",
@@ -25,17 +30,23 @@
         {
             "type": "cppbuild",
             "label": "C/C++: clang build active file",
-            "command": "/usr/bin/clang",
+            "command": "clang++",
             "args": [
-                "-fcolor-diagnostics",
-                "-fansi-escape-codes",
-                "-g",
-                "${file}",
+                "-std=c++20",
+                "${workspaceFolder}/Algorithm_visualizaer/main.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/bubble_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/selection_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/insertion_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/merge_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizaer/algorithms/quick_sort.cpp",
+                "-I/opt/homebrew/opt/sdl2-compat/include/SDL2",
+                "-L/opt/homebrew/opt/sdl2-compat/lib",
+                "-lSDL2",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${workspaceFolder}/Algorithm_visualizaer/Algorithm_visualizaer"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
