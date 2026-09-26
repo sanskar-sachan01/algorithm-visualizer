@@ -143,7 +143,12 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Algorithm_visualizaer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="algorithms\bubble_sort.cpp" />
+    <ClCompile Include="algorithms\selection_sort.cpp" />
+    <ClCompile Include="algorithms\insertion_sort.cpp" />
+    <ClCompile Include="algorithms\merge_sort.cpp" />
+    <ClCompile Include="algorithms\quick_sort.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
