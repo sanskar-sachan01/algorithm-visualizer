@@ -156,12 +156,17 @@
 	}
 </style>
 <style>
+	.header-side { display: grid; justify-items: end; gap: 16px; max-width: 290px; }
+	header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, 290px); align-items: end; }
+	header > div:first-child { grid-column: 1; grid-row: 1 / span 2; }
+	header > .intro { grid-column: 2; grid-row: 1; }
+	header > .theme-toggle { grid-column: 2; grid-row: 2; justify-self: end; }
 	.theme-toggle {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
 		min-height: 34px;
-		margin-top: 17px;
+		margin: 0;
 		padding: 0 11px;
 		color: var(--ink);
 		border-radius: 999px;
@@ -193,7 +198,8 @@
 	[data-theme='dark'] .metric { background: rgba(255, 255, 255, .035); }
 	[data-theme='dark'] .bar { box-shadow: inset 3px 0 0 #ffffff22, inset -4px 0 0 #0000004d, 8px 10px 12px #00000044; }
 	[data-theme='dark'] .bars::after { border-color: #82968a; background: repeating-linear-gradient(90deg, transparent 0 8%, #9bb3a022 8.1% 8.4%), linear-gradient(105deg, #91a8981a, transparent 42%); }
-	@media (min-width: 761px) { header { position: relative; } .theme-toggle { position: absolute; right: 0; bottom: 0; } }
+	@media (max-width: 760px) { .header-side { justify-items: start; max-width: 420px; margin-top: 17px; } }
+	@media (max-width: 760px) { header { display: block; } header > .theme-toggle { margin-top: 17px; } }
 </style>
 </head>
 <body><main><header><div><div class="eyebrow">Algorithm visualizer / 01</div><h1>Watch order<br>emerge.</h1></div><p class="intro">A hands-on lab for seeing how sorting algorithms think, one comparison at a time.</p><button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">Dark mode</button></header><section class="workspace"><aside class="panel"><h2>Experiment settings</h2><label for="algorithm">Algorithm</label><select id="algorithm"><option value="bubble">Bubble sort</option><option value="selection">Selection sort</option><option value="insertion">Insertion sort</option><option value="merge">Merge sort</option><option value="quick">Quick sort</option></select><label for="size"><span class="range-row"><span>Array size</span><span class="range-value" id="size-value"></span></span></label><input id="size" type="range" min="12" max="64" value="30"><label for="speed"><span class="range-row"><span>Step delay</span><span class="range-value" id="speed-value"></span></span></label><input id="speed" type="range" min="5" max="180" value="40"><div class="actions"><button class="primary" id="start">Run algorithm</button><button id="shuffle">New random array</button><button id="reset" disabled>Reset current run</button></div></aside><section class="stage"><div class="stage-top"><div class="status ready" id="status"><span class="status-dot"></span><span id="status-text">Ready to sort</span></div><div class="step-count" id="step-count">step 000</div></div><div class="bars" id="bars" aria-label="Array visualization"></div><div class="legend"><span class="compare"><i></i> comparing</span><span class="swap"><i></i> moving</span><span class="sorted"><i></i> sorted</span><span><i></i> unsorted</span></div><div class="metrics"><div class="metric"><small>Comparisons</small><strong id="comparisons">0</strong></div><div class="metric"><small>Moves</small><strong id="moves">0</strong></div><div class="metric"><small>Complexity</small><strong id="complexity">O(n²)</strong></div></div></section></section></main>
@@ -214,6 +220,7 @@ algorithm.onchange=()=>$('#complexity').textContent=algorithm.value==='merge'||a
 </script>
 <script>
 	const themeToggle = document.querySelector('#theme-toggle');
+	document.querySelector('.eyebrow').textContent = 'Sort studio';
 	const savedTheme = localStorage.getItem('sort-studio-theme');
 	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 	const setTheme = dark => {
