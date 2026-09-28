@@ -1,53 +1,95 @@
 #include "quick_sort.h"
 
-#include <SDL.h>
 #include <algorithm>
+#include <cstddef>
 
-#include "visualization.h"
+namespace
+{
+bool emit_step(const StepCallback& on_step, Step step)
+{
+	return !on_step || on_step(step);
+}
 
-bool quick_sort_values(
+bool quick_sort_range(
 	std::vector<int>& v,
-	SDL_Renderer* renderer,
+	const StepCallback& on_step,
 	int start,
 	int end
 )
 {
-	if (start >= end)
+	if (start > end)
 		return true;
 
-	int pivot = v[end];
+	if (start == end)
+		return emit_step(
+			on_step,
+			{StepType::MarkSorted, static_cast<std::size_t>(start)}
+		);
+
+	const int pivot = v[static_cast<std::size_t>(end)];
 	int smaller = start;
 
 	for (int current = start; current < end; current++)
 	{
-		if (!visualize_step(v, renderer, current, end))
+		if (!emit_step(
+				on_step,
+				{
+					StepType::Compare,
+					static_cast<std::size_t>(current),
+					static_cast<std::size_t>(end)
+				}))
 			return false;
 
-		if (v[current] < pivot)
+		if (v[static_cast<std::size_t>(current)] < pivot)
 		{
-			std::swap(v[current], v[smaller]);
-			smaller++;
+			std::swap(
+				v[static_cast<std::size_t>(current)],
+				v[static_cast<std::size_t>(smaller)]
+			);
 
-			if (!visualize_step(v, renderer, current, smaller - 1))
+			if (smaller != current && !emit_step(
+					on_step,
+					{
+						StepType::Swap,
+						static_cast<std::size_t>(smaller),
+						static_cast<std::size_t>(current)
+					}))
 				return false;
+
+			smaller++;
 		}
 	}
 
-	std::swap(v[smaller], v[end]);
+	std::swap(
+		v[static_cast<std::size_t>(smaller)],
+		v[static_cast<std::size_t>(end)]
+	);
 
-	if (!visualize_step(v, renderer, smaller, end))
+	if (smaller != end && !emit_step(
+			on_step,
+			{
+				StepType::Swap,
+				static_cast<std::size_t>(smaller),
+				static_cast<std::size_t>(end)
+			}))
 		return false;
 
-	if (!quick_sort_values(v, renderer, start, smaller - 1))
+	if (!emit_step(
+			on_step,
+			{StepType::MarkSorted, static_cast<std::size_t>(smaller)}))
 		return false;
 
-	return quick_sort_values(v, renderer, smaller + 1, end);
+	if (!quick_sort_range(v, on_step, start, smaller - 1))
+		return false;
+
+	return quick_sort_range(v, on_step, smaller + 1, end);
+}
 }
 
-bool quick_sort(std::vector<int>& v, SDL_Renderer* renderer)
+bool quick_sort(std::vector<int>& v, const StepCallback& on_step)
 {
 	if (v.empty())
 		return true;
 
-	return quick_sort_values(v, renderer, 0, v.size() - 1);
+	return quick_sort_range(v, on_step, 0, static_cast<int>(v.size() - 1));
 }

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "step.h"
+
 #include <vector>
 
-struct SDL_Renderer;
-
-bool bubble_sort(std::vector<int>& v, SDL_Renderer* renderer);
+bool bubble_sort(std::vector<int>& v, const StepCallback& on_step);

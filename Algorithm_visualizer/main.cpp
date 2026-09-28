@@ -67,6 +67,133 @@ bool visualize_step(
     return true;
 }
 
+struct VisualizationState
+{
+    std::vector<bool> sorted;
+    bool paused = false;
+};
+
+void draw_event_state(
+    const std::vector<int>& values,
+    SDL_Renderer* renderer,
+    const Step& step,
+    const VisualizationState& state
+)
+{
+    for (std::size_t index = 0; index < values.size(); index++)
+    {
+        const bool is_first_index = index == step.a;
+        const bool is_second_index = index == step.b;
+
+        if (step.type == StepType::MarkSorted && is_first_index)
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        else if (step.type == StepType::Compare &&
+                 (is_first_index || is_second_index))
+            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        else if (step.type == StepType::Swap &&
+                 (is_first_index || is_second_index))
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        else if (step.type == StepType::Overwrite && is_first_index)
+            SDL_SetRenderDrawColor(renderer, 255, 128, 0, 255);
+        else if (index < state.sorted.size() && state.sorted[index])
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        else
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        SDL_RenderDrawLine(
+            renderer,
+            static_cast<int>(index),
+            99,
+            static_cast<int>(index),
+            values[index]
+        );
+    }
+}
+
+bool poll_visualization_events(VisualizationState& state, bool& advance)
+{
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event))
+    {
+        if (event.type == SDL_QUIT)
+            return false;
+
+        if (event.type != SDL_KEYDOWN)
+            continue;
+
+        if (event.key.keysym.sym == SDLK_SPACE)
+            state.paused = !state.paused;
+        else if (event.key.keysym.sym == SDLK_RIGHT && state.paused)
+        {
+            state.paused = false;
+            advance = true;
+        }
+    }
+
+    return true;
+}
+
+bool visualize_event(
+    const std::vector<int>& values,
+    SDL_Renderer* renderer,
+    const Step& step,
+    VisualizationState& state
+)
+{
+    if (step.type == StepType::MarkSorted && step.a < state.sorted.size())
+        state.sorted[step.a] = true;
+
+    while (true)
+    {
+        bool advance = false;
+        if (!poll_visualization_events(state, advance))
+            return false;
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        draw_event_state(values, renderer, step, state);
+        SDL_RenderPresent(renderer);
+
+        if (!state.paused || advance)
+        {
+            if (!advance)
+                SDL_Delay(15);
+
+            return true;
+        }
+
+        SDL_Delay(16);
+    }
+}
+
+void apply_step(std::vector<int>& values, const Step& step)
+{
+    if (step.type == StepType::Swap &&
+        step.a < values.size() && step.b < values.size())
+        std::swap(values[step.a], values[step.b]);
+    else if (step.type == StepType::Overwrite && step.a < values.size())
+        values[step.a] = step.value;
+}
+
+bool replay_steps(
+    std::vector<int>& values,
+    const std::vector<Step>& steps,
+    SDL_Renderer* renderer,
+    VisualizationState& state
+)
+{
+    for (const Step& step : steps)
+    {
+        apply_step(values, step);
+
+        if (!visualize_event(values, renderer, step, state))
+            return false;
+    }
+
+    return true;
+}
+
 int choose_algorithm()
 {
     int choice = 0;
@@ -105,6 +232,8 @@ int main()
     for (int index = 0; index < value_count; index++)
         values.push_back(distribution(random_device));
 
+    const std::vector<int> initial_values = values;
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         std::cerr << "SDL_Init failed: "
@@ -132,23 +261,34 @@ int main()
     SDL_RenderSetScale(renderer, 10, 10);
 
     bool sorted_successfully = true;
+    std::vector<Step> steps;
+    VisualizationState visualization_state{
+        std::vector<bool>(values.size(), false),
+        false
+    };
+
+    const StepCallback on_step = [&](const Step& step)
+    {
+        steps.push_back(step);
+        return visualize_event(values, renderer, step, visualization_state);
+    };
 
     switch (algorithm_choice)
     {
     case 1:
-        sorted_successfully = bubble_sort(values, renderer);
+        sorted_successfully = bubble_sort(values, on_step);
         break;
     case 2:
-        sorted_successfully = selection_sort(values, renderer);
+        sorted_successfully = selection_sort(values, on_step);
         break;
     case 3:
-        sorted_successfully = insertion_sort(values, renderer);
+        sorted_successfully = insertion_sort(values, on_step);
         break;
     case 4:
-        sorted_successfully = merge_sort(values, renderer);
+        sorted_successfully = merge_sort(values, on_step);
         break;
     case 5:
-        sorted_successfully = quick_sort(values, renderer);
+        sorted_successfully = quick_sort(values, on_step);
         break;
     }
 
@@ -178,6 +318,19 @@ int main()
         {
             if (event.type == SDL_QUIT)
                 running = false;
+            else if (event.type == SDL_KEYDOWN &&
+                     event.key.keysym.sym == SDLK_r)
+            {
+                values = initial_values;
+                visualization_state.sorted.assign(values.size(), false);
+                visualization_state.paused = false;
+                running = replay_steps(
+                    values,
+                    steps,
+                    renderer,
+                    visualization_state
+                );
+            }
         }
 
         SDL_Delay(16);

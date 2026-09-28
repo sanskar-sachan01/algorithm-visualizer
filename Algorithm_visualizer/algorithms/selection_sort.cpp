@@ -1,19 +1,22 @@
 #include "selection_sort.h"
 
-#include <SDL.h>
 #include <algorithm>
+#include <cstddef>
 
-#include "visualization.h"
-
-bool selection_sort(std::vector<int>& v, SDL_Renderer* renderer)
+bool selection_sort(std::vector<int>& v, const StepCallback& on_step)
 {
-	for (unsigned int current = 0; current < v.size(); current++)
+	const auto emit = [&](Step step)
 	{
-		unsigned int smallest = current;
+		return !on_step || on_step(step);
+	};
 
-		for (unsigned int next = current + 1; next < v.size(); next++)
+	for (std::size_t current = 0; current < v.size(); current++)
+	{
+		std::size_t smallest = current;
+
+		for (std::size_t next = current + 1; next < v.size(); next++)
 		{
-			if (!visualize_step(v, renderer, smallest, next))
+			if (!emit({StepType::Compare, current, next}))
 				return false;
 
 			if (v[next] < v[smallest])
@@ -24,9 +27,12 @@ bool selection_sort(std::vector<int>& v, SDL_Renderer* renderer)
 		{
 			std::swap(v[current], v[smallest]);
 
-			if (!visualize_step(v, renderer, current, smallest))
+			if (!emit({StepType::Swap, current, smallest}))
 				return false;
 		}
+
+		if (!emit({StepType::MarkSorted, current}))
+			return false;
 	}
 
 	return true;

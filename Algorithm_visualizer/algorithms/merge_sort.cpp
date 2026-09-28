@@ -1,25 +1,31 @@
 #include "merge_sort.h"
 
-#include <SDL.h>
+#include <cstddef>
 #include <vector>
 
-#include "visualization.h"
+namespace
+{
+bool emit_step(const StepCallback& on_step, Step step)
+{
+	return !on_step || on_step(step);
+}
 
-bool merge_values(
+bool merge_runs(
 	std::vector<int>& v,
-	SDL_Renderer* renderer,
-	unsigned int start,
-	unsigned int middle,
-	unsigned int end
+	const StepCallback& on_step,
+	std::size_t start,
+	std::size_t middle,
+	std::size_t end,
+	bool mark_sorted
 )
 {
 	std::vector<int> merged;
-	unsigned int left = start;
-	unsigned int right = middle + 1;
+	std::size_t left = start;
+	std::size_t right = middle + 1;
 
 	while (left <= middle && right <= end)
 	{
-		if (!visualize_step(v, renderer, left, right))
+		if (!emit_step(on_step, {StepType::Compare, left, right}))
 			return false;
 
 		if (v[left] <= v[right])
@@ -46,41 +52,52 @@ bool merge_values(
 		right++;
 	}
 
-	for (unsigned int index = 0; index < merged.size(); index++)
+	for (std::size_t index = 0; index < merged.size(); index++)
 	{
-		v[start + index] = merged[index];
+		const std::size_t position = start + index;
+		v[position] = merged[index];
 
-		if (!visualize_step(v, renderer, start + index, start + index))
+		if (!emit_step(
+				on_step,
+				{StepType::Overwrite, position, position, merged[index]}))
+			return false;
+
+		if (mark_sorted && !emit_step(on_step, {StepType::MarkSorted, position}))
 			return false;
 	}
 
 	return true;
 }
 
-bool merge_values(
+bool merge_sort_range(
 	std::vector<int>& v,
-	SDL_Renderer* renderer,
-	unsigned int start,
-	unsigned int end
+	const StepCallback& on_step,
+	std::size_t start,
+	std::size_t end,
+	bool mark_sorted
 )
 {
 	if (start >= end)
 		return true;
 
-	unsigned int middle = start + (end - start) / 2;
+	const std::size_t middle = start + (end - start) / 2;
 
-	if (!merge_values(v, renderer, start, middle))
+	if (!merge_sort_range(v, on_step, start, middle, false))
 		return false;
-	if (!merge_values(v, renderer, middle + 1, end))
+	if (!merge_sort_range(v, on_step, middle + 1, end, false))
 		return false;
 
-	return merge_values(v, renderer, start, middle, end);
+	return merge_runs(v, on_step, start, middle, end, mark_sorted);
+}
 }
 
-bool merge_sort(std::vector<int>& v, SDL_Renderer* renderer)
+bool merge_sort(std::vector<int>& v, const StepCallback& on_step)
 {
 	if (v.empty())
 		return true;
 
-	return merge_values(v, renderer, 0, v.size() - 1);
+	if (v.size() == 1)
+		return emit_step(on_step, {StepType::MarkSorted, 0});
+
+	return merge_sort_range(v, on_step, 0, v.size() - 1, true);
 }

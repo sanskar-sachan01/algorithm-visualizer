@@ -1,7 +1,7 @@
 #pragma once
 
+#include "step.h"
+
 #include <vector>
 
-struct SDL_Renderer;
-
-bool selection_sort(std::vector<int>& v, SDL_Renderer* renderer);
+bool selection_sort(std::vector<int>& v, const StepCallback& on_step);

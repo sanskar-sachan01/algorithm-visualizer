@@ -1,28 +1,51 @@
 #include "bubble_sort.h"
 
-#include <SDL.h>
 #include <algorithm>
+#include <cstddef>
 
-#include "visualization.h"
-
-bool bubble_sort(std::vector<int>& v, SDL_Renderer* renderer)
+bool bubble_sort(std::vector<int>& v, const StepCallback& on_step)
 {
-    for (unsigned int end = v.size(); end > 1; end--)
+    const auto emit = [&](Step step)
     {
-        for (unsigned int current = 0; current + 1 < end; current++)
+        return !on_step || on_step(step);
+    };
+
+    for (std::size_t end = v.size(); end > 1; end--)
+    {
+        bool swapped = false;
+
+        for (std::size_t current = 0; current + 1 < end; current++)
         {
-            if (!visualize_step(v, renderer, current, current + 1))
+            if (!emit({StepType::Compare, current, current + 1}))
                 return false;
 
             if (v[current] > v[current + 1])
             {
                 std::swap(v[current], v[current + 1]);
+                swapped = true;
 
-                if (!visualize_step(v, renderer, current, current + 1))
+                if (!emit({StepType::Swap, current, current + 1}))
                     return false;
             }
         }
+
+        if (!emit({StepType::MarkSorted, end - 1}))
+            return false;
+
+        if (!swapped)
+        {
+            for (std::size_t index = 0; index + 1 < end; index++)
+            {
+                if (!emit({StepType::MarkSorted, index}))
+                    return false;
+            }
+
+            return true;
+        }
     }
+
+    if (!v.empty() && !emit({StepType::MarkSorted, 0}))
+        return false;
 
     return true;
 }
