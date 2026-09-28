@@ -1,41 +1,25 @@
 # Algorithm Visualizer
 
-An interactive web-based algorithm visualizer that helps you understand algorithms through step-by-step visualizations.
+An interactive tool for visualizing algorithms step by step, making their execution easier to understand.
 
-## 🌐 Live Demo
+### Features
 
-**http://algovis.tech**
-
-## ✨ Features
-
-* Visualize algorithms step by step
+* Step-by-step algorithm visualization
+* Adjustable execution speed
 * Interactive controls
-* Easy-to-understand visual representation
-* Runs directly in the browser
-* Responsive interface
+* Sorting and searching algorithms
 
-## 🛠️ Tech Stack
+### Tech Stack
 
-* HTML
-* CSS
-* JavaScript
+* **C++** — Algorithm implementation
+* **HTML, CSS, JavaScript** — Visualization & interface
 
-## 🚀 Run Locally
+### Live Demo
 
-Clone the repository:
+https://algovis.tech/
 
-```bash
-git clone https://github.com/sanskar-sachan01/algorithm-visualizer.git
-```
+### Purpose
 
-Open the project folder:
+Built to strengthen my understanding of **C++, Data Structures & Algorithms**, and interactive visualization.
 
-```bash
-cd algorithm-visualizer
-```
-
-Then open `index.html` in your browser.
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+**Author:** Sanskar Sachan
