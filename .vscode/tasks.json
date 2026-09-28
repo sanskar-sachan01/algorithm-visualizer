@@ -7,17 +7,17 @@
             "command": "clang++",
             "args": [
                 "-std=c++20",
-                "${workspaceFolder}/Algorithm_visualizaer/main.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/bubble_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/selection_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/insertion_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/merge_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/quick_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/main.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/bubble_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/selection_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/insertion_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/merge_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/quick_sort.cpp",
                 "-I/opt/homebrew/opt/sdl2-compat/include/SDL2",
                 "-L/opt/homebrew/opt/sdl2-compat/lib",
                 "-lSDL2",
                 "-o",
-                "${workspaceFolder}/Algorithm_visualizaer/Algorithm_visualizaer"
+                "${workspaceFolder}/Algorithm_visualizer/Algorithm_visualizer"
             ],
             "group": {
                 "kind": "build",
@@ -33,17 +33,17 @@
             "command": "clang++",
             "args": [
                 "-std=c++20",
-                "${workspaceFolder}/Algorithm_visualizaer/main.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/bubble_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/selection_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/insertion_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/merge_sort.cpp",
-                "${workspaceFolder}/Algorithm_visualizaer/algorithms/quick_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/main.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/bubble_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/selection_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/insertion_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/merge_sort.cpp",
+                "${workspaceFolder}/Algorithm_visualizer/algorithms/quick_sort.cpp",
                 "-I/opt/homebrew/opt/sdl2-compat/include/SDL2",
                 "-L/opt/homebrew/opt/sdl2-compat/lib",
                 "-lSDL2",
                 "-o",
-                "${workspaceFolder}/Algorithm_visualizaer/Algorithm_visualizaer"
+                "${workspaceFolder}/Algorithm_visualizer/Algorithm_visualizer"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Algorithm_visualizaer/Algorithm_visualizaer.vcxproj" Id="8cf4aa83-e490-4c76-a4c1-d457c7e4ff3a" />
+  <Project Path="Algorithm_visualizer/Algorithm_visualizer.vcxproj" Id="8cf4aa83-e490-4c76-a4c1-d457c7e4ff3a" />
 </Solution>

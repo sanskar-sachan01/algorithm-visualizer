@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive sorting algorithm visualizer">
+<title>Sort Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{--ink:#17211b;--muted:#68736b;--paper:#f5f3ed;--panel:#fffdf8;--line:#d9ddd3;--lime:#c8f169;--coral:#f27d69;--blue:#6b9cff;--teal:#4ab7a4;--shadow:0 20px 60px #1e2c201a}*{box-sizing:border-box}body{margin:0;min-width:320px;color:var(--ink);background:var(--paper);font-family:'Space Grotesk',sans-serif}body:before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.32;background-image:radial-gradient(#c5c9be .7px,transparent .7px);background-size:18px 18px;mask-image:linear-gradient(#000,transparent 80%)}main{position:relative;max-width:1180px;margin:auto;padding:42px 28px 54px}header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:42px}.eyebrow{color:var(--teal);font:500 12px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase}h1{max-width:620px;margin:12px 0 0;font-size:clamp(42px,7vw,82px);line-height:.91;letter-spacing:-.055em}.intro{max-width:265px;margin:7px 0 0;color:var(--muted);font-size:15px;line-height:1.55}.workspace{display:grid;grid-template-columns:275px 1fr;gap:18px}.panel,.stage{background:#fffdf8f2;border:1px solid var(--line);box-shadow:var(--shadow)}.panel{padding:23px}.panel h2{margin:0 0 25px;font-size:16px}label{display:block;margin:21px 0 8px;color:var(--muted);font:500 11px 'DM Mono',monospace;text-transform:uppercase}.range-row{display:flex;justify-content:space-between}.range-value{color:var(--ink);font:500 12px 'DM Mono',monospace}select,input[type=range]{width:100%}select{padding:12px 13px;color:var(--ink);border:1px solid var(--line);border-radius:2px;background:var(--paper);font:500 14px 'Space Grotesk',sans-serif}input[type=range]{accent-color:var(--teal);cursor:pointer}.actions{display:grid;gap:9px;margin-top:28px}button{min-height:43px;padding:0 15px;color:var(--ink);border:1px solid var(--ink);border-radius:2px;background:transparent;font:600 13px 'Space Grotesk',sans-serif;cursor:pointer;transition:.15s}button:hover:not(:disabled){transform:translateY(-2px);background:var(--lime)}button:disabled{cursor:not-allowed;opacity:.42}button.primary{border-color:var(--ink);background:var(--ink);color:var(--panel)}button.primary:hover:not(:disabled){background:var(--teal);border-color:var(--teal)}.stage{min-height:530px;display:flex;flex-direction:column;padding:22px 24px 20px;overflow:hidden}.stage-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line)}.status{display:flex;align-items:center;gap:9px;font:500 12px 'DM Mono',monospace;text-transform:uppercase}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--coral)}.status.ready .status-dot{background:var(--teal)}.status.done .status-dot{background:var(--lime);box-shadow:0 0 0 4px #e9f8be}.step-count{color:var(--muted);font:12px 'DM Mono',monospace}.bars{display:flex;align-items:flex-end;justify-content:center;gap:clamp(2px,.55vw,7px);flex:1;min-height:340px;padding:34px 4px 12px}.bar{flex:1 1 0;max-width:28px;min-width:3px;background:var(--ink);transition:height .12s,background-color .12s}.bar.compare{background:var(--coral)}.bar.swap{background:var(--blue)}.bar.sorted{background:var(--teal)}.legend{display:flex;flex-wrap:wrap;gap:15px;padding-top:17px;border-top:1px solid var(--line);color:var(--muted);font:11px 'DM Mono',monospace;text-transform:uppercase}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:8px;height:8px;display:inline-block;background:var(--ink)}.legend .compare i{background:var(--coral)}.legend .swap i{background:var(--blue)}.legend .sorted i{background:var(--teal)}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:18px;background:var(--line);border:1px solid var(--line)}.metric{padding:13px 15px;background:var(--panel)}.metric small{display:block;color:var(--muted);font:10px 'DM Mono',monospace;text-transform:uppercase}.metric strong{display:block;margin-top:5px;font:500 19px 'DM Mono',monospace}@media(max-width:760px){main{padding:28px 16px 40px}header{display:block;margin-bottom:28px}.intro{margin-top:17px;max-width:420px}.workspace{grid-template-columns:1fr}.panel{order:2}.stage{min-height:470px}.bars{min-height:270px;padding-top:25px}}
+</style>
+<style>
+/* Give each value a shallow extrusion so height remains easy to compare. */
+.stage { perspective: 1200px; }
+.bars {
+	position: relative;
+	perspective: 900px;
+	transform-style: preserve-3d;
+	background: linear-gradient(to bottom, transparent 94%, #d9ddd355 94%, #d9ddd355 94.5%, transparent 94.5%);
+}
+.bars::after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	left: 2%;
+	right: 2%;
+	bottom: 4px;
+	height: 34%;
+	border-top: 1px solid #bfc7bc;
+	background: repeating-linear-gradient(90deg, transparent 0 8%, #c8cec455 8.1% 8.4%), linear-gradient(105deg, #dce1d855, transparent 42%);
+	transform: rotateX(61deg) translateZ(-18px);
+	transform-origin: bottom;
+}
+.bar {
+	position: relative;
+	z-index: 1;
+	border-radius: 3px 3px 0 0;
+	transform: rotateX(4deg);
+	transform-origin: bottom;
+	transform-style: preserve-3d;
+	box-shadow: inset 3px 0 0 #ffffff26, inset -4px 0 0 #0000001c, 8px 10px 12px #17211b26;
+}
+.bar::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 8px;
+	border-radius: 3px 3px 0 0;
+	background: #ffffff4d;
+	transform: translateY(-4px) rotateX(62deg);
+	transform-origin: bottom;
+}
+.bar::after {
+	content: '';
+	position: absolute;
+	top: 3px;
+	right: -6px;
+	width: 6px;
+	height: 100%;
+	background: #0000001c;
+	transform: skewY(-24deg);
+	transform-origin: left top;
+}
+.bar.compare { box-shadow: inset 3px 0 0 #ffffff38, inset -4px 0 0 #9b3a2d55, 8px 10px 12px #9b3a2d2b; }
+.bar.swap { box-shadow: inset 3px 0 0 #ffffff38, inset -4px 0 0 #264f9b55, 8px 10px 12px #264f9b2b; }
+.bar.sorted { box-shadow: inset 3px 0 0 #ffffff38, inset -4px 0 0 #287d7055, 8px 10px 12px #287d702b; }
+@media (max-width: 760px) {
+	.bars { perspective: 650px; }
+	.bar::after { right: -3px; width: 3px; }
+}
+</style>
+</head>
+<body><main><header><div><div class="eyebrow">Algorithm visualizer / 01</div><h1>Watch order<br>emerge.</h1></div><p class="intro">A hands-on lab for seeing how sorting algorithms think, one comparison at a time.</p></header><section class="workspace"><aside class="panel"><h2>Experiment settings</h2><label for="algorithm">Algorithm</label><select id="algorithm"><option value="bubble">Bubble sort</option><option value="selection">Selection sort</option><option value="insertion">Insertion sort</option><option value="merge">Merge sort</option><option value="quick">Quick sort</option></select><label for="size"><span class="range-row"><span>Array size</span><span class="range-value" id="size-value"></span></span></label><input id="size" type="range" min="12" max="64" value="30"><label for="speed"><span class="range-row"><span>Step delay</span><span class="range-value" id="speed-value"></span></span></label><input id="speed" type="range" min="5" max="180" value="40"><div class="actions"><button class="primary" id="start">Run algorithm</button><button id="shuffle">New random array</button><button id="reset" disabled>Reset current run</button></div></aside><section class="stage"><div class="stage-top"><div class="status ready" id="status"><span class="status-dot"></span><span id="status-text">Ready to sort</span></div><div class="step-count" id="step-count">step 000</div></div><div class="bars" id="bars" aria-label="Array visualization"></div><div class="legend"><span class="compare"><i></i> comparing</span><span class="swap"><i></i> moving</span><span class="sorted"><i></i> sorted</span><span><i></i> unsorted</span></div><div class="metrics"><div class="metric"><small>Comparisons</small><strong id="comparisons">0</strong></div><div class="metric"><small>Moves</small><strong id="moves">0</strong></div><div class="metric"><small>Complexity</small><strong id="complexity">O(n²)</strong></div></div></section></section></main>
+<script>
+const $=s=>document.querySelector(s),bars=$('#bars'),algorithm=$('#algorithm'),size=$('#size'),speed=$('#speed'),start=$('#start'),shuffle=$('#shuffle'),reset=$('#reset');let values=[],original=[],running=false,paused=false,comparisons=0,moves=0,steps=0,timer;
+const wait=ms=>new Promise(resolve=>{timer=setTimeout(resolve,ms)}),delay=()=>+speed.value,random=n=>Array.from({length:n},()=>Math.floor(Math.random()*92)+8);
+function render(active=[],moving=[],done=[]){bars.innerHTML='';values.forEach((v,i)=>{const b=document.createElement('div');b.className='bar'+(active.includes(i)?' compare':'')+(moving.includes(i)?' swap':'')+(done.includes(i)?' sorted':'');b.style.height=v+'%';bars.append(b)});$('#comparisons').textContent=comparisons;$('#moves').textContent=moves;$('#step-count').textContent='step '+String(steps).padStart(3,'0')}
+function state(text,kind='ready'){$('#status').className='status '+kind;$('#status-text').textContent=text}function resetStats(){comparisons=moves=steps=0;render()}
+function makeArray(){clearTimeout(timer);values=random(+size.value);original=[...values];running=paused=false;start.disabled=false;start.textContent='Run algorithm';reset.disabled=true;state('Ready to sort');resetStats()}
+async function check(a=[],m=[],d=[]){while(paused)await wait(80);if(!running)return false;steps++;render(a,m,d);await wait(delay());return running}async function swap(a,b,d=[]){[values[a],values[b]]=[values[b],values[a]];moves++;return check([], [a,b],d)}
+async function bubble(){let done=[];for(let end=values.length-1;end>0;end--){let changed=false;for(let i=0;i<end;i++){comparisons++;if(!await check([i,i+1],[],done))return false;if(values[i]>values[i+1]){changed=true;if(!await swap(i,i+1,done))return false}}done.unshift(end);if(!changed)break}return true}
+async function selection(){let done=[];for(let s=0;s<values.length-1;s++){let min=s;for(let i=s+1;i<values.length;i++){comparisons++;if(!await check([min,i],[],done))return false;if(values[i]<values[min])min=i}if(min!==s&&!await swap(s,min,done))return false;done.push(s)}return true}
+async function insertion(){let done=[0];for(let i=1;i<values.length;i++){let p=i;while(p>0){comparisons++;if(!await check([p-1,p],[],done))return false;if(values[p-1]<=values[p])break;if(!await swap(p-1,p,done))return false;p--}done.push(i)}return true}
+async function merge(){const done=[];async function join(l,m,r){const copy=values.slice(l,r+1);let a=0,b=m-l+1,t=l;while(a<=m-l&&b<=r-l){comparisons++;if(!await check([l+a,l+b],[],done))return false;if(copy[a]<=copy[b])values[t++]=copy[a++];else values[t++]=copy[b++];moves++;if(!await check([],[t-1],done))return false}while(a<=m-l){values[t++]=copy[a++];moves++;if(!await check([],[t-1],done))return false}while(b<=r-l){values[t++]=copy[b++];moves++;if(!await check([],[t-1],done))return false}return true}async function split(l,r){if(l>=r)return true;const m=Math.floor((l+r)/2);return await split(l,m)&&await split(m+1,r)&&await join(l,m,r)}return split(0,values.length-1)}
+async function quick(){const done=[];async function part(l,r){const pivot=values[r];let p=l;for(let i=l;i<r;i++){comparisons++;if(!await check([i,r],[],done))return-1;if(values[i]<pivot){if(p!==i&&!await swap(p,i,done))return-1;p++}}if(p!==r&&!await swap(p,r,done))return-1;done.push(p);return p}async function split(l,r){if(l>=r){if(l===r)done.push(l);return true}const p=await part(l,r);return p<0?false:await split(l,p-1)&&await split(p+1,r)}return split(0,values.length-1)}
+async function run(){if(running){paused=!paused;start.textContent=paused?'Resume algorithm':'Pause algorithm';state(paused?'Paused':'Sorting');return}running=true;paused=false;comparisons=moves=steps=0;start.textContent='Pause algorithm';shuffle.disabled=true;reset.disabled=false;state('Sorting');render();let ok=algorithm.value==='bubble'?await bubble():algorithm.value==='selection'?await selection():algorithm.value==='insertion'?await insertion():algorithm.value==='merge'?await merge():await quick();if(ok&&running){running=false;render([],[],values.map((_,i)=>i));state('Sorted','done');start.textContent='Run again'}shuffle.disabled=false}
+algorithm.onchange=()=>$('#complexity').textContent=algorithm.value==='merge'||algorithm.value==='quick'?'O(n log n)':'O(n²)';size.oninput=()=>$('#size-value').textContent=size.value+' values';speed.oninput=()=>$('#speed-value').textContent=speed.value+' ms';start.onclick=run;shuffle.onclick=makeArray;reset.onclick=()=>{running=false;clearTimeout(timer);values=[...original];start.textContent='Run algorithm';reset.disabled=true;state('Ready to sort');resetStats()};makeArray();size.oninput();speed.oninput();
+</script></body></html>
