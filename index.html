@@ -155,8 +155,48 @@
 		.bars { min-height: 285px; }
 	}
 </style>
+<style>
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 34px;
+		margin-top: 17px;
+		padding: 0 11px;
+		color: var(--ink);
+		border-radius: 999px;
+		font: 500 11px 'DM Mono', monospace;
+		letter-spacing: .04em;
+		text-transform: uppercase;
+	}
+	.theme-toggle::before { content: '◐'; font-size: 15px; line-height: 1; }
+	[data-theme='dark'] {
+		--ink: #eef5ef;
+		--muted: #a5b3a9;
+		--paper: #101713;
+		--panel: #18221c;
+		--line: #34443a;
+		--glass: rgba(28, 42, 34, .62);
+		--glass-strong: rgba(32, 48, 39, .8);
+		--glass-edge: rgba(205, 235, 215, .22);
+		--glass-shadow: 0 26px 80px rgba(0, 0, 0, .34), 0 2px 8px rgba(0, 0, 0, .24);
+	}
+	[data-theme='dark'] body {
+		background: linear-gradient(145deg, #1b2820, transparent 44%), linear-gradient(315deg, #27351d, transparent 46%), var(--paper);
+	}
+	[data-theme='dark'] body::before { opacity: .13; }
+	[data-theme='dark'] body::after { opacity: .28; }
+	[data-theme='dark'] .panel, [data-theme='dark'] .stage { background: linear-gradient(145deg, rgba(35, 53, 43, .8), rgba(19, 29, 24, .74)); }
+	[data-theme='dark'] .eyebrow, [data-theme='dark'] .theme-toggle, [data-theme='dark'] select, [data-theme='dark'] button { background: rgba(255, 255, 255, .07); border-color: rgba(205, 235, 215, .2); }
+	[data-theme='dark'] button.primary { background: #d5f58a; color: #17211b; border-color: #d5f58a; }
+	[data-theme='dark'] button.primary:hover:not(:disabled) { background: #9ee4d3; border-color: #9ee4d3; }
+	[data-theme='dark'] .metric { background: rgba(255, 255, 255, .035); }
+	[data-theme='dark'] .bar { box-shadow: inset 3px 0 0 #ffffff22, inset -4px 0 0 #0000004d, 8px 10px 12px #00000044; }
+	[data-theme='dark'] .bars::after { border-color: #82968a; background: repeating-linear-gradient(90deg, transparent 0 8%, #9bb3a022 8.1% 8.4%), linear-gradient(105deg, #91a8981a, transparent 42%); }
+	@media (min-width: 761px) { header { position: relative; } .theme-toggle { position: absolute; right: 0; bottom: 0; } }
+</style>
 </head>
-<body><main><header><div><div class="eyebrow">Algorithm visualizer / 01</div><h1>Watch order<br>emerge.</h1></div><p class="intro">A hands-on lab for seeing how sorting algorithms think, one comparison at a time.</p></header><section class="workspace"><aside class="panel"><h2>Experiment settings</h2><label for="algorithm">Algorithm</label><select id="algorithm"><option value="bubble">Bubble sort</option><option value="selection">Selection sort</option><option value="insertion">Insertion sort</option><option value="merge">Merge sort</option><option value="quick">Quick sort</option></select><label for="size"><span class="range-row"><span>Array size</span><span class="range-value" id="size-value"></span></span></label><input id="size" type="range" min="12" max="64" value="30"><label for="speed"><span class="range-row"><span>Step delay</span><span class="range-value" id="speed-value"></span></span></label><input id="speed" type="range" min="5" max="180" value="40"><div class="actions"><button class="primary" id="start">Run algorithm</button><button id="shuffle">New random array</button><button id="reset" disabled>Reset current run</button></div></aside><section class="stage"><div class="stage-top"><div class="status ready" id="status"><span class="status-dot"></span><span id="status-text">Ready to sort</span></div><div class="step-count" id="step-count">step 000</div></div><div class="bars" id="bars" aria-label="Array visualization"></div><div class="legend"><span class="compare"><i></i> comparing</span><span class="swap"><i></i> moving</span><span class="sorted"><i></i> sorted</span><span><i></i> unsorted</span></div><div class="metrics"><div class="metric"><small>Comparisons</small><strong id="comparisons">0</strong></div><div class="metric"><small>Moves</small><strong id="moves">0</strong></div><div class="metric"><small>Complexity</small><strong id="complexity">O(n²)</strong></div></div></section></section></main>
+<body><main><header><div><div class="eyebrow">Algorithm visualizer / 01</div><h1>Watch order<br>emerge.</h1></div><p class="intro">A hands-on lab for seeing how sorting algorithms think, one comparison at a time.</p><button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">Dark mode</button></header><section class="workspace"><aside class="panel"><h2>Experiment settings</h2><label for="algorithm">Algorithm</label><select id="algorithm"><option value="bubble">Bubble sort</option><option value="selection">Selection sort</option><option value="insertion">Insertion sort</option><option value="merge">Merge sort</option><option value="quick">Quick sort</option></select><label for="size"><span class="range-row"><span>Array size</span><span class="range-value" id="size-value"></span></span></label><input id="size" type="range" min="12" max="64" value="30"><label for="speed"><span class="range-row"><span>Step delay</span><span class="range-value" id="speed-value"></span></span></label><input id="speed" type="range" min="5" max="180" value="40"><div class="actions"><button class="primary" id="start">Run algorithm</button><button id="shuffle">New random array</button><button id="reset" disabled>Reset current run</button></div></aside><section class="stage"><div class="stage-top"><div class="status ready" id="status"><span class="status-dot"></span><span id="status-text">Ready to sort</span></div><div class="step-count" id="step-count">step 000</div></div><div class="bars" id="bars" aria-label="Array visualization"></div><div class="legend"><span class="compare"><i></i> comparing</span><span class="swap"><i></i> moving</span><span class="sorted"><i></i> sorted</span><span><i></i> unsorted</span></div><div class="metrics"><div class="metric"><small>Comparisons</small><strong id="comparisons">0</strong></div><div class="metric"><small>Moves</small><strong id="moves">0</strong></div><div class="metric"><small>Complexity</small><strong id="complexity">O(n²)</strong></div></div></section></section></main>
 <script>
 const $=s=>document.querySelector(s),bars=$('#bars'),algorithm=$('#algorithm'),size=$('#size'),speed=$('#speed'),start=$('#start'),shuffle=$('#shuffle'),reset=$('#reset');let values=[],original=[],running=false,paused=false,comparisons=0,moves=0,steps=0,timer;
 const wait=ms=>new Promise(resolve=>{timer=setTimeout(resolve,ms)}),delay=()=>+speed.value,random=n=>Array.from({length:n},()=>Math.floor(Math.random()*92)+8);
@@ -171,4 +211,17 @@ async function merge(){const done=[];async function join(l,m,r){const copy=value
 async function quick(){const done=[];async function part(l,r){const pivot=values[r];let p=l;for(let i=l;i<r;i++){comparisons++;if(!await check([i,r],[],done))return-1;if(values[i]<pivot){if(p!==i&&!await swap(p,i,done))return-1;p++}}if(p!==r&&!await swap(p,r,done))return-1;done.push(p);return p}async function split(l,r){if(l>=r){if(l===r)done.push(l);return true}const p=await part(l,r);return p<0?false:await split(l,p-1)&&await split(p+1,r)}return split(0,values.length-1)}
 async function run(){if(running){paused=!paused;start.textContent=paused?'Resume algorithm':'Pause algorithm';state(paused?'Paused':'Sorting');return}running=true;paused=false;comparisons=moves=steps=0;start.textContent='Pause algorithm';shuffle.disabled=true;reset.disabled=false;state('Sorting');render();let ok=algorithm.value==='bubble'?await bubble():algorithm.value==='selection'?await selection():algorithm.value==='insertion'?await insertion():algorithm.value==='merge'?await merge():await quick();if(ok&&running){running=false;render([],[],values.map((_,i)=>i));state('Sorted','done');start.textContent='Run again'}shuffle.disabled=false}
 algorithm.onchange=()=>$('#complexity').textContent=algorithm.value==='merge'||algorithm.value==='quick'?'O(n log n)':'O(n²)';size.oninput=()=>$('#size-value').textContent=size.value+' values';speed.oninput=()=>$('#speed-value').textContent=speed.value+' ms';start.onclick=run;shuffle.onclick=makeArray;reset.onclick=()=>{running=false;clearTimeout(timer);values=[...original];start.textContent='Run algorithm';reset.disabled=true;state('Ready to sort');resetStats()};makeArray();size.oninput();speed.oninput();
+</script>
+<script>
+	const themeToggle = document.querySelector('#theme-toggle');
+	const savedTheme = localStorage.getItem('sort-studio-theme');
+	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	const setTheme = dark => {
+		document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+		themeToggle.textContent = dark ? 'Light mode' : 'Dark mode';
+		themeToggle.setAttribute('aria-pressed', String(dark));
+		localStorage.setItem('sort-studio-theme', dark ? 'dark' : 'light');
+	};
+	setTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
+	themeToggle.addEventListener('click', () => setTheme(document.documentElement.dataset.theme !== 'dark'));
 </script></body></html>
