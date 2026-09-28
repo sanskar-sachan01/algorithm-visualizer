@@ -71,6 +71,90 @@
 	.bar::after { right: -3px; width: 3px; }
 }
 </style>
+<style>
+	:root {
+		--glass: rgba(255, 255, 255, .56);
+		--glass-strong: rgba(255, 255, 255, .72);
+		--glass-edge: rgba(255, 255, 255, .82);
+		--glass-shadow: 0 26px 80px rgba(45, 62, 52, .15), 0 2px 8px rgba(45, 62, 52, .08);
+	}
+	body {
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, .72), transparent 38%),
+			linear-gradient(315deg, rgba(200, 241, 105, .18), transparent 42%),
+			#e7ebe4;
+	}
+	body::after {
+		content: '';
+		position: fixed;
+		z-index: -1;
+		inset: -18%;
+		pointer-events: none;
+		opacity: .48;
+		background: conic-gradient(from 210deg at 52% 44%, transparent, rgba(74, 183, 164, .2), transparent 28%, rgba(242, 125, 105, .13), transparent 58%);
+		filter: blur(70px);
+	}
+	main { padding-top: 52px; }
+	header { align-items: end; }
+	.eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 7px 10px;
+		border: 1px solid rgba(255, 255, 255, .84);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, .38);
+		box-shadow: 0 5px 18px rgba(45, 62, 52, .08), inset 0 1px rgba(255, 255, 255, .88);
+		backdrop-filter: blur(16px) saturate(125%);
+	}
+	.eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px rgba(74, 183, 164, .16); }
+	h1 { text-shadow: 0 8px 22px rgba(45, 62, 52, .12); }
+	.intro { padding-bottom: 3px; }
+	.panel, .stage {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid var(--glass-edge);
+		border-radius: 8px;
+		background: linear-gradient(145deg, rgba(255, 255, 255, .74), rgba(255, 255, 255, .38));
+		box-shadow: var(--glass-shadow), inset 0 1px rgba(255, 255, 255, .94);
+		backdrop-filter: blur(24px) saturate(125%);
+	}
+	.panel::before, .stage::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 8%;
+		right: 8%;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .98), transparent);
+	}
+	.panel > *, .stage > * { position: relative; z-index: 1; }
+	.panel { background: linear-gradient(155deg, rgba(255, 255, 255, .68), rgba(255, 255, 255, .38)); }
+	.panel h2 { letter-spacing: -.03em; }
+	select, button {
+		border-radius: 8px;
+		border-color: rgba(255, 255, 255, .9);
+		background: rgba(255, 255, 255, .46);
+		box-shadow: inset 0 1px rgba(255, 255, 255, .88), 0 3px 12px rgba(45, 62, 52, .06);
+		backdrop-filter: blur(14px);
+	}
+	select:focus, button:focus-visible, input[type='range']:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+	button { transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+	button:hover:not(:disabled) { box-shadow: inset 0 1px rgba(255, 255, 255, .95), 0 8px 22px rgba(45, 62, 52, .13); }
+	button.primary { border-color: rgba(23, 33, 27, .9); background: rgba(23, 33, 27, .92); box-shadow: inset 0 1px rgba(255, 255, 255, .22), 0 8px 18px rgba(23, 33, 27, .18); }
+	.stage { transform: translateZ(0); }
+	.stage-top { border-color: rgba(255, 255, 255, .7); }
+	.bars { min-height: 355px; }
+	.bar { filter: saturate(1.08); }
+	.metrics { overflow: hidden; border-radius: 8px; border-color: rgba(255, 255, 255, .76); background: rgba(255, 255, 255, .46); box-shadow: inset 0 1px rgba(255, 255, 255, .9); }
+	.metric { background: rgba(255, 255, 255, .3); }
+	.legend { border-color: rgba(255, 255, 255, .7); }
+	@media (max-width: 760px) {
+		main { padding-top: 30px; }
+		header { align-items: initial; }
+		.bars { min-height: 285px; }
+	}
+</style>
 </head>
 <body><main><header><div><div class="eyebrow">Algorithm visualizer / 01</div><h1>Watch order<br>emerge.</h1></div><p class="intro">A hands-on lab for seeing how sorting algorithms think, one comparison at a time.</p></header><section class="workspace"><aside class="panel"><h2>Experiment settings</h2><label for="algorithm">Algorithm</label><select id="algorithm"><option value="bubble">Bubble sort</option><option value="selection">Selection sort</option><option value="insertion">Insertion sort</option><option value="merge">Merge sort</option><option value="quick">Quick sort</option></select><label for="size"><span class="range-row"><span>Array size</span><span class="range-value" id="size-value"></span></span></label><input id="size" type="range" min="12" max="64" value="30"><label for="speed"><span class="range-row"><span>Step delay</span><span class="range-value" id="speed-value"></span></span></label><input id="speed" type="range" min="5" max="180" value="40"><div class="actions"><button class="primary" id="start">Run algorithm</button><button id="shuffle">New random array</button><button id="reset" disabled>Reset current run</button></div></aside><section class="stage"><div class="stage-top"><div class="status ready" id="status"><span class="status-dot"></span><span id="status-text">Ready to sort</span></div><div class="step-count" id="step-count">step 000</div></div><div class="bars" id="bars" aria-label="Array visualization"></div><div class="legend"><span class="compare"><i></i> comparing</span><span class="swap"><i></i> moving</span><span class="sorted"><i></i> sorted</span><span><i></i> unsorted</span></div><div class="metrics"><div class="metric"><small>Comparisons</small><strong id="comparisons">0</strong></div><div class="metric"><small>Moves</small><strong id="moves">0</strong></div><div class="metric"><small>Complexity</small><strong id="complexity">O(n²)</strong></div></div></section></section></main>
 <script>
